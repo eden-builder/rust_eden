@@ -1,0 +1,8 @@
+[package]
+name = "rust_eden"
+version = "0.1.0"
+authors = ["Liam Perlaki <lperlaki@icloud.com>"]
+edition = "2018"
+
+[dependencies]
+libflate = "0.1.19"
