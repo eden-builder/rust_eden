@@ -30,10 +30,8 @@ fn main() -> io::Result<()> {
     let f = File::open("1541108087.eden")?;
 
     let header = helper::read_struct::<WorldFileHeader, _>(&f)?;
-    let header2 = helper::read_struct::<WorldFileHeader, _>(&f)?;
 
     println!("{:?}", header.pos);
-    println!("{:?}", header2.pos);
 
     Ok(())
 }
