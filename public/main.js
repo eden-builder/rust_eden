@@ -185,11 +185,11 @@ function placeCube(x, y, z, c) {
 }
 
 
-function placeChunk(a) {
+function placeChunk(a, offset_x = 0, offset_z = 0) {
     for (let x = 0; x < a.length; x++) {
         for (let y = 0; y < a[x].length; y++) {
             for (let z = 0; z < a[x][y].length; z++) {
-                if (a[x][y][z]) placeCube(x, z, y, a[x][y][z]);
+                if (a[x][y][z]) placeCube(x + offset_x, z + offset_z, y, a[x][y][z]);
             }
         }
     }
@@ -253,12 +253,22 @@ function renderChunk(a) {
     scene.add(mesh);
 }
 
+function placeChunks(chunks) {
+    for (let chunk of chunks) {
+        console.log(chunk.x)
+        placeChunk(chunk.blocks, chunk.x, chunk.z)
+    }
+}
+
 import {
-    chunk
+    loadWorld
 } from './chunk'
 
 function init() {
-    placeChunk(chunk);
+    loadWorld(1541108087).then(chunks => {
+        placeChunks(chunks)
+    })
+
 }
 
 animate();

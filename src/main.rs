@@ -1,10 +1,7 @@
-use std::collections::HashMap;
-use std::fs::{metadata, File};
 use std::io;
 use std::mem::size_of;
-use std::path::Path;
 
-mod helper;
+mod utils;
 
 #[derive(Debug)]
 #[repr(C)]
@@ -47,26 +44,22 @@ struct Column {
     chunks: [Chunk; 4],
 }
 
+use std::io::Read;
+
 fn main() -> io::Result<()> {
-    let p = Path::new("1541108087.eden");
-    let f = File::open(p)?;
-    let header = helper::read_struct::<WorldFileHeader, _>(&f)?;
-    let columns: HashMap<u64, Column> = (size_of::<WorldFileHeader>() as u64
-        ..header.directory_offset)
-        .step_by(size_of::<Column>())
-        .filter_map(|i| {
-            helper::read_struct::<Column, _>(&f)
-                .and_then(|x| Ok((i, x)))
-                .ok()
-        })
-        .collect();
+    let mut reader = utils::download_world("1541108087")?;
+    let header = utils::read_struct::<WorldFileHeader, _>(reader.by_ref())?;
 
-    let column_indexes: Vec<ColumnIndex> = (header.directory_offset..metadata(p)?.len())
-        .step_by(size_of::<ColumnIndex>())
-        .filter_map(|_| helper::read_struct::<ColumnIndex, _>(&f).ok())
-        .collect();
+    let count = (header.directory_offset - size_of::<WorldFileHeader>() as u64)
+        / size_of::<Column>() as u64;
+    println!("{}", count);
 
-    println!("{}", columns.contains_key(&(column_indexes[0].chunk_offset-1)));
+    let _columns = utils::read_struct::<[Column; 7784], _>(reader.by_ref())?;
+    // reader.by_ref().take(
+    //     (header.directory_offset - size_of::<WorldFileHeader>() as u64)
+    //         - 7784 * size_of::<Column>() as u64,
+    // );
+    // let _indexes = utils::read_struct::<[ColumnIndex; 7784], _>(reader.by_ref())?;
 
     Ok(())
 }

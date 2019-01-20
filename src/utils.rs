@@ -1,3 +1,5 @@
+use libflate::gzip::Decoder;
+use reqwest;
 use std::io::{self, Read};
 
 pub fn read_struct<T, R: Read>(mut read: R) -> io::Result<T> {
@@ -13,4 +15,9 @@ pub fn read_struct<T, R: Read>(mut read: R) -> io::Result<T> {
             }
         }
     }
+}
+
+pub fn download_world(_name: &'static str) -> io::Result<Decoder<reqwest::Response>> {
+    let req = reqwest::get("http://files.edengame.net/1541108087.eden").unwrap();
+    Decoder::new(req)
 }
