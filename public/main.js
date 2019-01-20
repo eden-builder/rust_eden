@@ -258,7 +258,7 @@ import {
 } from './chunk'
 
 function init() {
-    placeChunk([...chunk, ...chunk]);
+    placeChunk(chunk);
 }
 
 animate();
