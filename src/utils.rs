@@ -1,5 +1,6 @@
 use libflate::gzip::Decoder;
 use reqwest;
+use std::io::Cursor;
 use std::io::{self, Read};
 
 pub fn read_struct<T, R: Read>(mut read: R) -> io::Result<T> {
@@ -17,7 +18,9 @@ pub fn read_struct<T, R: Read>(mut read: R) -> io::Result<T> {
     }
 }
 
-pub fn download_world(_name: &'static str) -> io::Result<Decoder<reqwest::Response>> {
+pub fn download_world(_name: &'static str) -> io::Result<Cursor<Vec<u8>>> {
     let req = reqwest::get("http://files.edengame.net/1541108087.eden").unwrap();
-    Decoder::new(req)
+    let mut buffer = Vec::new();
+    Decoder::new(req)?.read_to_end(&mut buffer)?;
+    Ok(Cursor::new(buffer))
 }

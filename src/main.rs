@@ -44,17 +44,21 @@ struct Column {
     chunks: [Chunk; 4],
 }
 
+use std::io::Cursor;
 use std::io::Read;
 
 fn main() -> io::Result<()> {
-    let mut reader = utils::download_world("1541108087")?;
-    let header = utils::read_struct::<WorldFileHeader, _>(reader.by_ref())?;
+    let mut c = utils::download_world("1541108087")?;
+    let header = utils::read_struct::<WorldFileHeader, _>(c.by_ref())?;
 
-    let count = (header.directory_offset - size_of::<WorldFileHeader>() as u64)
-        / size_of::<Column>() as u64;
-    println!("{}", count);
+    println!("{}", header.level_seed);
+    println!("{}", c.position());
 
-    let _columns = utils::read_struct::<[Column; 7784], _>(reader.by_ref())?;
+    // let count = (header.directory_offset - size_of::<WorldFileHeader>() as u64)
+    //     / size_of::<Column>() as u64;
+    // println!("{}", count);
+
+    // let _columns = utils::read_struct::<[Column; 7784], _>(c.by_ref())?;
     // reader.by_ref().take(
     //     (header.directory_offset - size_of::<WorldFileHeader>() as u64)
     //         - 7784 * size_of::<Column>() as u64,
